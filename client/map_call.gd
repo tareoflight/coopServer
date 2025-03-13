@@ -1,7 +1,6 @@
 extends Node3D
 
 
-
 var map_node_scene = preload("res://MapNodes/MapNode.tscn")
 
 #db stuff
@@ -15,8 +14,6 @@ func	connect_to_server():
 		push_error("NO db to connect too")
 		return false
 	return true
-
-
 
 func send_sql_query(query: String) -> String:
 	if not connect_to_server():
