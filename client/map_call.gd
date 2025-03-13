@@ -1,21 +1,32 @@
 extends Node3D
 
 
-var pipe_path = "\\\\.\\pipe\\sql_pipe"
+
 var map_node_scene = preload("res://MapNodes/MapNode.tscn")
 
-func send_sql_query(query: String) -> String:
-	var result = []
-	var exit_code = OS.execute("cmd", ["/c", "echo " + query + " > " + pipe_path], result, true)
-	
-	if exit_code != 0:
-		push_error("Failed to send SQL query")
-		return ""
+#db stuff
+var host = "127.0.0.1"
+var port = 25569 #add logic later
+var client = StreamPeerTCP.new()
 
-	var response = []
-	exit_code = OS.execute("cmd", ["/c", "type " + pipe_path], response, true)
-	
-	return response[0] if response.size() > 0 else ""
+func	connect_to_server():
+	var e = client.connect_to_host(host,port)
+	if e != OK:
+		push_error("NO db to connect too")
+		return false
+	return true
+
+
+
+func send_sql_query(query: String) -> String:
+	if not connect_to_server():
+		return ""
+	client.put_data(query.to_utf8_buffer())
+	var r = ""
+	while client.get_available_bytes() >0:
+		r += client.get_string(client.get_available_bytes())
+	client.disconnect_from_host()
+	return r
 
 func _ready():
 	spawn_map_nodes()
