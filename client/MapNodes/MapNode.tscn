@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b303x8ij5vspk"]
+
+[ext_resource type="Script" uid="uid://dk0l85s2ansrn" path="res://MapNodes/map_node_Obj.gd" id="1_s24kw"]
+
+[node name="MapNode" type="Node3D"]
+script = ExtResource("1_s24kw")
