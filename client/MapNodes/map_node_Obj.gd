@@ -5,6 +5,7 @@ var contents = {
 	"air": 0.0,
 	"ground": 1.0
 }
+
 var neighbors: Array = []  # Neighbors list
 var plane: MeshInstance3D = null 
 var plane_texture: Texture2D
