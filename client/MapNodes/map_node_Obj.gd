@@ -28,12 +28,12 @@ func _ready() -> void:
 	add_child(plane)
 
 func update_draw():
-	plane.position = Vector3(position.x,position.y-contents["air"],position.z)
+	
 	var c = Color.BLACK
 	var g = contents["ground"]
 	if g == 1:
 		c = Color.DARK_GRAY
-	elif g <= 0.5:
+	elif g <= 0.5 and g > 0:
 		c = Color.BROWN
 	elif g > 0.5:
 		c = Color.GREEN
@@ -41,7 +41,15 @@ func update_draw():
 		c = Color.WHITE
 	 
 	if contents["air"] == 1:
-		material.transparency =BaseMaterial3D.TRANSPARENCY_MAX
+		material.albedo_color = Color.TRANSPARENT
+		#delete the plain
+		remove_child(plane)
+		pass
+
+	if contents["air"] > 0:
+		plane.position = Vector3(position.x,position.y-(contents["air"]*10),position.z)
+	else:
+		plane.position = Vector3(position.x,position.y,position.z)
 
 	material.albedo_color = c
 
