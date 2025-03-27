@@ -29,70 +29,76 @@ func _ready():
 	spawn_map_nodes()
 
 func spawn_map_nodes():
-	# Check if the database exists (this is just a placeholder; replace it with actual DB existence check)
-	if not connect_to_server():  
-		print("Database not found. Loading test data...")
-		load_test_data()
-		return
-	
-	var result = send_sql_query("SELECT x, y, z FROM map;")
-	
-	if result.is_empty():
-		print("No data in the database. Loading test data...")
-		load_test_data()
-		return
-	
-	var locations = result.split("\n")  # In case multiple rows are returned
-	
-	for loc in locations:
-		var coords = loc.split(",")
-		if coords.size() == 3:
-			pass #spawn_map_node(coords[0].to_float(), coords[1].to_float(), coords[2].to_float())
+	load_test_data()
 
 
-func spawn_map_node(x: float, y: float, z: float, air: float, ground: float):
+func spawn_map_node(x: int, y: int, z: int, content: Array):
 	var map_node = map_node_scene.instantiate()
 	add_child(map_node)
 
-	map_node.position = Vector3(x, y, z)
-	map_node.set_contents("air", air)
-	map_node.set_contents("ground", ground)
+	map_node.position = Vector3i(x*map_node.gridsize, y*map_node.gridsize, z*map_node.gridsize)
+	map_node.init()
+	map_node.set_contents(content)
 
 	map_node.update_draw()
-	print("Spawned MapNode at: ", Vector3(x, y, z))
+	print("Spawned a ",map_node.statename[map_node.state]," MapNode at: ",map_node.render_loc)
+
+
+
+
+
 
 func load_test_data():
+
 	var test_data = [
-		{"pos": Vector3(0, 0, 0), "air":0, "ground":1},
-		{"pos": Vector3(0, 0, 1), "air":0, "ground":1},
-		{"pos": Vector3(0, 0, 2), "air":0, "ground":1},
-		{"pos": Vector3(1, 0, 0), "air":0, "ground":1},
-		{"pos": Vector3(1, 0, 1), "air":0, "ground":1},
-		{"pos": Vector3(1, 0, 2), "air":0, "ground":1},
-		{"pos": Vector3(2, 0, 0), "air":0, "ground":1},
-		{"pos": Vector3(2, 0, 1), "air":0, "ground":1},
-		{"pos": Vector3(2, 0, 2), "air":0, "ground":1},
+		{"pos": Vector3i(0, 0, 0), "content":[]},
+		{"pos": Vector3i(0, 0, 1), "content":[]},
+		{"pos": Vector3i(0, 0, 2), "content":[]},
+		{"pos": Vector3i(1, 0, 0), "content":[]},
+		{"pos": Vector3i(1, 0, 1), "content":[]},
+		{"pos": Vector3i(1, 0, 2), "content":[]},
+		{"pos": Vector3i(2, 0, 0), "content":[]},
+		{"pos": Vector3i(2, 0, 1), "content":[]},
+		{"pos": Vector3i(2, 0, 2), "content":[]},
 
-		{"pos": Vector3(0, 1, 0), "air":0.1, "ground":0.9},
-		{"pos": Vector3(0, 1, 1), "air":0.2, "ground":0.8},
-		{"pos": Vector3(0, 1, 2), "air":0.3, "ground":0.7},
-		{"pos": Vector3(1, 1, 0), "air":0.4, "ground":0.6},
-		{"pos": Vector3(1, 1, 1), "air":0.5, "ground":0.5},
-		{"pos": Vector3(1, 1, 2), "air":0.6, "ground":0.4},
-		{"pos": Vector3(2, 1, 0), "air":0.7, "ground":0.3},
-		{"pos": Vector3(2, 1, 1), "air":0.8, "ground":0.2},
-		{"pos": Vector3(2, 1, 2), "air":0.9, "ground":0.1},
+		{"pos": Vector3i(0, 1, 0), "content":[]},
+		{"pos": Vector3i(0, 1, 1), "content":[]},
+		{"pos": Vector3i(0, 1, 2), "content":[]},
+		{"pos": Vector3i(1, 1, 0), "content":[]},
+		{"pos": Vector3i(1, 1, 1), "content":[]},
+		{"pos": Vector3i(1, 1, 2), "content":[]},
+		{"pos": Vector3i(2, 1, 0), "content":[]},
+		{"pos": Vector3i(2, 1, 1), "content":[]},
+		{"pos": Vector3i(2, 1, 2), "content":[]},
 
-		{"pos": Vector3(0, 2, 0), "air":1, "ground":0},
-		{"pos": Vector3(0, 2, 1), "air":1, "ground":0},
-		{"pos": Vector3(0, 2, 2), "air":1, "ground":0},
-		{"pos": Vector3(1, 2, 0), "air":1, "ground":0},
-		{"pos": Vector3(1, 2, 1), "air":1, "ground":0},
-		{"pos": Vector3(1, 2, 2), "air":1, "ground":0},
-		{"pos": Vector3(2, 2, 0), "air":1, "ground":0},
-		{"pos": Vector3(2, 2, 1), "air":1, "ground":0},
-		{"pos": Vector3(2, 2, 2), "air":1, "ground":0},
-
+		{"pos": Vector3i(0, 2, 0), "content":[]},
+		{"pos": Vector3i(0, 2, 1), "content":[]},
+		{"pos": Vector3i(0, 2, 2), "content":[]},
+		{"pos": Vector3i(1, 2, 0), "content":[]},
+		{"pos": Vector3i(1, 2, 1), "content":[]},
+		{"pos": Vector3i(1, 2, 2), "content":[]},
+		{"pos": Vector3i(2, 2, 0), "content":[]},
+		{"pos": Vector3i(2, 2, 1), "content":[]},
+		{"pos": Vector3i(2, 2, 2), "content":[]},
 	]
+	var arr = []
+	arr.resize(256)
+	for i in range(256):
+		arr[i]=0
+	for i in range(test_data.size()):
+		var b = arr.duplicate()
+		if i < 8:
+			b[0] = 0
+			b[200] = 255
+			test_data[i]["content"] = b
+		elif i > 15:
+			b[0] = 255
+			test_data[i]["content"] = b
+		else:
+			var l = i - 7
+			b[0] = ((l+0.0) / 8) * 255
+			b[150] = 255 - b[0]
+			test_data[i]["content"] = b
+
 	for data in test_data:
-		spawn_map_node(data["pos"].x*10, data["pos"].y*10, data["pos"].z*10, data["air"], data["ground"])
+		spawn_map_node(data["pos"].x, data["pos"].y, data["pos"].z, data["content"])

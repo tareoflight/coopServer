@@ -1,3 +1,4 @@
 {
-    "dotnet.defaultSolution": "coding.sln"
+    "dotnet.defaultSolution": "coding.sln",
+    "godotTools.editorPath.godot4": "e:\\Users\\natha\\Desktop\\godot.windows.editor.x86_64.exe"
 }
