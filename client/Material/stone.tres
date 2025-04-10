@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://o0nwuo145838"]
+
+[ext_resource type="Texture2D" uid="uid://c01cm75ec2g45" path="res://Material/Ground_Textures/stone.webp" id="1_0opha"]
+[ext_resource type="Texture2D" uid="uid://cd8tga3ohs788" path="res://Material/Ground_Textures/stone_N.webp" id="2_7406q"]
+
+[resource]
+albedo_texture = ExtResource("1_0opha")
+normal_enabled = true
+normal_texture = ExtResource("2_7406q")
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+uv1_world_triplanar = true
