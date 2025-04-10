@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package node;
+
+import "vector3.proto";
+
+message MapNode {
+    Vector3 location = 1;
+    bytes contents = 2;
+}

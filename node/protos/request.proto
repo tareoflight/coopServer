@@ -1,0 +1,23 @@
+syntax = "proto3";
+package node;
+
+import "control.proto";
+import "vector3.proto";
+
+message Request {
+    uint32 request_id = 1;
+    oneof request_type {
+        ControlRequest control = 2;
+        MapRequest map = 3;
+    }
+}
+
+message MapRequest {
+    Vector3 player = 1;
+}
+
+message ControlRequest {
+    oneof control_type {
+        Shutdown shutdown = 1;
+    }
+}

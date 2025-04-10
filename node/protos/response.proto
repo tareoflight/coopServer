@@ -1,0 +1,15 @@
+syntax = "proto3";
+package node;
+
+import "map_node.proto";
+
+message Response {
+    uint32 request_id = 1;
+    oneof request_type {
+        MapResponse map_response = 2;
+    }
+}
+
+message MapResponse {
+    repeated MapNode nodes = 1;
+}

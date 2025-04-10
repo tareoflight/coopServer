@@ -7,4 +7,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ProtosDir>$(ProjectDir)..\protos</ProtosDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.30.1" />
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.30.1" />
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="$(protoc_windows64) -I=$(ProtosDir) --csharp_out=protos $(ProtosDir)\*.proto" />
+  </Target>
+
 </Project>

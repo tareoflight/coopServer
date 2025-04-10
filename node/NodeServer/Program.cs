@@ -1,6 +1,7 @@
-﻿using System.Net;
+﻿using System.Buffers;
+using System.Net;
 using System.Net.Sockets;
-using System.Text;
+using System.Threading.Tasks;
 
 Console.WriteLine("Starting node server");
 
@@ -14,21 +15,17 @@ socket.Bind(endpoint);
 socket.Listen(100);
 
 Socket handler = await socket.AcceptAsync();
-const string eom = "<|EOM|>";
-const string ack = "<|ACK|>";
+
+
 
 while (true)
 {
-    byte[] buffer = new byte[1_024];
-    int recieved = await handler.ReceiveAsync(buffer, SocketFlags.None);
-    string response = Encoding.UTF8.GetString(buffer, 0, recieved);
-
-    if (response.Contains(eom))
+    List<byte[]> chunks = [];
+    byte[] sizeBuffer = new byte[4];
+    int received = await handler.ReceiveAsync(sizeBuffer, SocketFlags.None);
+    do
     {
-        Console.WriteLine($"Socket server received message: \"{response.Replace(eom, "")}\"");
-        byte[] ackBytes = Encoding.UTF8.GetBytes(ack);
-        await handler.SendAsync(ackBytes, 0);
-
-        Console.WriteLine($"Socket server sent acknowledgment: \"{ack}\"");
-    }
+        byte[] buffer = new byte[1_024];
+        int recieved = await handler.ReceiveAsync(buffer, SocketFlags.None);
+    } while (true);
 }
