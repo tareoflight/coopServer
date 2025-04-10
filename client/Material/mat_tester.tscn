@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://bb6rv7l3dnrd8"]
+
+[ext_resource type="Material" uid="uid://c1mi4p58n08xt" path="res://Material/Ground_Textures/null.tres" id="1_4moh0"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_6jfx1"]
+material = ExtResource("1_4moh0")
+size = Vector2(300, 300)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_4moh0"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.868434, 0.429379, -0.247901, -1.49013e-08, 0.499998, 0.866027, 0.495804, 0.752087, -0.434215, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.724886, -0.180258, 0.664867, -0.0204466, 0.959101, 0.282324, -0.688566, -0.218247, 0.691553, 1.46793, 1.90272, 0.708352)
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_6jfx1")
+
+[node name="Player" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.57194, 0.956342, -1.61913)
+mesh = SubResource("CapsuleMesh_4moh0")
