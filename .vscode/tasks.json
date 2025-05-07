@@ -7,7 +7,7 @@
             "file": "node\\ClientSim\\ClientSim.csproj",
             "group": "build",
             "problemMatcher": [],
-            "label": "build ClientSim"
+            "label": "build ClientSim",
         },
         {
             "type": "dotnet",
@@ -15,7 +15,8 @@
             "file": "node\\NodeServer\\NodeServer.csproj",
             "group": "build",
             "problemMatcher": [],
-            "label": "build NodeServer"
+            "label": "build NodeServer",
+            "dependsOn": ["build ClientSim"],
         }
     ]
 }
