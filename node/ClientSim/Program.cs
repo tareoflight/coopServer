@@ -12,7 +12,21 @@ IPEndPoint endpoint = new(addr, port);
 
 using Socket socket = new(addr.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-await socket.ConnectAsync(endpoint);
+while (true)
+{
+    try
+    {
+        W("Connecting to server...");
+        await socket.ConnectAsync(endpoint);
+        break;
+    }
+    catch (SocketException)
+    {
+        W("Server not ready, retrying...");
+        await Task.Delay(1000);
+    }
+}
+
 using NetworkStream stream = new(socket);
 using BinaryWriter writer = new(stream);
 uint requestId = 1;
@@ -31,14 +45,12 @@ while (loop)
         case "1":
             ControlRequest control = new()
             {
-                Shutdown = new ()
+                Shutdown = new()
             };
             request.Control = control;
             byte[] bytes = request.ToByteArray();
             writer.Write(bytes.Length);
             writer.Write(bytes);
-            Console.WriteLine(bytes.Length);
-            Console.WriteLine(string.Join(" ", bytes.Select(b => b.ToString())));
             break;
         case "q":
             W("Exiting...");

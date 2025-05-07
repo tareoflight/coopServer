@@ -2,6 +2,7 @@
 
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Node;
 
@@ -15,23 +16,39 @@ public partial class Program
         using Socket socket = Bind(logger, "127.0.0.1", 25569);
         socket.Listen(100);
 
-        using Socket handler = await socket.AcceptAsync();
-
-        using NetworkStream stream = new(handler);
-        RequestReader reader = new(stream);
-
         while (true)
         {
-            Request request = await reader.GetRequestAsync();
-            LogRequest(logger, request.ToString());
-            switch (request.RequestTypeCase)
+            // wait for someone to connect
+            using Socket handler = await socket.AcceptAsync();
+            using NetworkStream stream = new(handler);
+            RequestReader reader = new(stream);
+            LogClientConnect(logger);
+
+            try
             {
-                case Request.RequestTypeOneofCase.Control:
-                    request.ToString();
-                    break;
-                case Request.RequestTypeOneofCase.None:
-                    LogEmptyRequest(logger);
-                    break;
+                while (true)
+                {
+                    Request request = await reader.GetRequestAsync();
+                    LogRequest(logger, request);
+                    switch (request.RequestTypeCase)
+                    {
+                        case Request.RequestTypeOneofCase.Control:
+                            request.ToString();
+                            break;
+                        case Request.RequestTypeOneofCase.None:
+                            LogEmptyRequest(logger);
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex) when
+            (
+                ex is EndOfStreamException ||
+                ex is IOException
+            )
+            {
+                // connection ended, loop around for the next
+                LogClientDisconnect(logger);
             }
         }
     }
@@ -62,6 +79,12 @@ public partial class Program
     [LoggerMessage(Level = LogLevel.Warning, Message = "Ignoring empty request")]
     static partial void LogEmptyRequest(ILogger logger);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "{Request}")]
-    static partial void LogRequest(ILogger logger, string request);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Request: {Request}")]
+    static partial void LogRequest(ILogger logger, Request request);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Client Connected")]
+    static partial void LogClientConnect(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Client Disconnected")]
+    static partial void LogClientDisconnect(ILogger logger);
 }
