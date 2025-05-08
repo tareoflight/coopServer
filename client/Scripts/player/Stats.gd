@@ -11,6 +11,9 @@ class_name Stats
 @export_subgroup("dex","dex_")
 @export var dex_speed: float = 0.0
 @export var dex_sprintMod: float = 0.0
+@export var dex_jumpstr: float = 0.0
+@export var dex_aircontrol:float = 0.5
+
 
 @export var con:float=8.0
 @export_subgroup("con","con_")
@@ -31,6 +34,9 @@ class_name Stats
 @export var current_speed: float = 0.0
 @export var direction = Vector3.ZERO
 @export var velocity = Vector3.ZERO
+@export var gravity: float = -5
+@export var jumpMaxtimer: float = 1
+@export var jumptimer: float = 0
 
 @export var load:float = 5.0
 

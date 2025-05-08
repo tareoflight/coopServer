@@ -14,7 +14,8 @@ func calculate_stats():
 	#dex
 	var dex = user.stats.dex
 	user.stats.dex_speed = dex
-	user.stats.dex_sprintMod = minf(((dex - 10) / 2)/5,0.0)
+	user.stats.dex_sprintMod = maxf((1+((dex - 10) / 2)/5),1.2)
+	user.stats.dex_jumpstr = user.stats.dex
 	
 	#con
 	var con = user.stats.con
@@ -26,6 +27,7 @@ func calculate_stats():
 	
 
 func update(delta):
+	user.velocity = lerp(user.velocity,Vector3.ZERO,user.stats.lerp_speed*delta)
 	if user.stats.current_health < user.stats.con_maxHealth:
 		user.stats.current_health = user.stats.current_health + (user.stats.con_regen*delta)
 	elif user.stats.current_health > user.stats.con_maxHealth:
@@ -33,7 +35,13 @@ func update(delta):
 	
 	if user.stats.current_stamina < user.stats.con_maxStamina:
 		user.stats.current_stamina = user.stats.current_stamina + (user.stats.con_regen*delta)
-		
+	elif user.stats.current_stamina > user.stats.con_maxStamina:
+		user.stats.current_stamina = user.stats.con_maxStamina
+	
 	var input_dir := Input.get_vector("left", "right", "forward", "backword")
 	if !input_dir.is_zero_approx():
 		state_machine.change_state("Run")
+	
+	if Input.is_action_pressed("jump") and user.is_on_floor():
+		state_machine.change_state("Jump")
+	
