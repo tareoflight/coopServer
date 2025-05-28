@@ -4,7 +4,7 @@ using Node;
 
 namespace NodeServer.Tests;
 
-public class RequestQueueTests
+public class RequestQueueTests : IDisposable
 {
     private readonly CancellationTokenSource cancel = new();
     private readonly RequestQueue requestQueue;
@@ -13,6 +13,11 @@ public class RequestQueueTests
     public RequestQueueTests()
     {
         requestQueue = new RequestQueue(NullLogger.Instance, dispatcher.Object);
+    }
+
+    public void Dispose()
+    {
+        dispatcher.VerifyNoOtherCalls();
     }
 
     [Fact]
