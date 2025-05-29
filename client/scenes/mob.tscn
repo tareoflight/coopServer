@@ -1,0 +1,78 @@
+[gd_scene load_steps=10 format=3 uid="uid://bhbsgytkcajts"]
+
+[ext_resource type="Script" uid="uid://m1igjvgncrr6" path="res://Scripts/mob/Mob.gd" id="1_h8ps3"]
+[ext_resource type="Script" uid="uid://b6wj1at1p80y7" path="res://Scripts/mob/Stats.gd" id="2_ebxvl"]
+[ext_resource type="Script" uid="uid://dlwe4mf01k2wm" path="res://Scripts/SM/StateMachine.gd" id="3_wpivu"]
+[ext_resource type="Script" uid="uid://vt18krmdlo10" path="res://Scripts/mob/Run.gd" id="4_nao87"]
+[ext_resource type="Script" uid="uid://corg5f6ko27or" path="res://Scripts/mob/Idle.gd" id="5_i71wu"]
+[ext_resource type="Script" uid="uid://cbqgsb8eq4tid" path="res://Scripts/mob/Jump.gd" id="6_m0xve"]
+
+[sub_resource type="Resource" id="Resource_85ep3"]
+script = ExtResource("2_ebxvl")
+str = 8.0
+str_maxLoad = 0.0
+str_minLoad = 0.0
+str_baseMinDamg = 0.0
+dex = 8.0
+dex_speed = 0.0
+dex_sprintMod = 0.0
+dex_jumpstr = 0.0
+dex_aircontrol = 0.5
+con = 8.0
+con_maxHealth = 0.0
+con_maxStamina = 0.0
+con_stamina = 0.0
+con_regen = 0.0
+intl = 8.0
+wis = 8.0
+cha = 8.0
+current_health = 0.0
+current_stamina = 0.0
+current_speed = 0.0
+direction = Vector3(0, 0, 0)
+velocity = Vector3(0, 0, 0)
+gravity = -5.0
+jumpMaxtimer = 1.0
+jumptimer = 0.0
+load = 5.0
+lerp_speed = 15.0
+metadata/_custom_type_script = "uid://b6wj1at1p80y7"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_fcfxi"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6tpsp"]
+height = 1.2
+
+[node name="mob" type="CharacterBody3D"]
+script = ExtResource("1_h8ps3")
+stats = SubResource("Resource_85ep3")
+
+[node name="standing_collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_fcfxi")
+
+[node name="crouch_collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.604685, 0)
+shape = SubResource("CapsuleShape3D_6tpsp")
+disabled = true
+
+[node name="can_stand" type="RayCast3D" parent="."]
+target_position = Vector3(0, 2, 0)
+
+[node name="neck" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="head" type="Node3D" parent="neck"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("3_wpivu")
+
+[node name="Run" type="Node" parent="StateMachine"]
+script = ExtResource("4_nao87")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("5_i71wu")
+
+[node name="Jump" type="Node" parent="StateMachine"]
+script = ExtResource("6_m0xve")

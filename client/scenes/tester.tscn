@@ -1,14 +1,9 @@
-[gd_scene load_steps=16 format=3 uid="uid://bb6rv7l3dnrd8"]
+[gd_scene load_steps=10 format=3 uid="uid://bb6rv7l3dnrd8"]
 
 [ext_resource type="Material" uid="uid://dq2h38f862qq3" path="res://assets/textures/fpass/path/forestGrass.tres" id="1_ayr21"]
 [ext_resource type="Texture2D" uid="uid://d0t4d3fkrxrfx" path="res://assets/hdris/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="2_0hq0q"]
 [ext_resource type="Material" uid="uid://cxyi1q36fng8t" path="res://assets/textures/dev/grids/Dark/texture_07_material.tres" id="2_b1dbx"]
-[ext_resource type="Script" uid="uid://m1igjvgncrr6" path="res://Scripts/player/Player.gd" id="3_yyub0"]
-[ext_resource type="Script" uid="uid://b6wj1at1p80y7" path="res://Scripts/player/Stats.gd" id="4_0eea3"]
-[ext_resource type="Script" uid="uid://dlwe4mf01k2wm" path="res://Scripts/SM/StateMachine.gd" id="4_ag3va"]
-[ext_resource type="Script" uid="uid://vt18krmdlo10" path="res://Scripts/player/Run.gd" id="5_0eea3"]
-[ext_resource type="Script" uid="uid://corg5f6ko27or" path="res://Scripts/player/Idle.gd" id="6_85ep3"]
-[ext_resource type="Script" uid="uid://cbqgsb8eq4tid" path="res://Scripts/player/Jump.gd" id="8_85ep3"]
+[ext_resource type="Script" uid="uid://dag4ibqvauxnb" path="res://Scripts/player/player.gd" id="4_0hq0q"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_fcfxi"]
 panorama = ExtResource("2_0hq0q")
@@ -22,40 +17,10 @@ sky = SubResource("Sky_f1nm7")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="Resource" id="Resource_85ep3"]
-script = ExtResource("4_0eea3")
-str = 8.0
-str_maxLoad = 0.0
-str_minLoad = 0.0
-str_baseMinDamg = 0.0
-dex = 8.0
-dex_speed = 0.0
-dex_sprintMod = 0.0
-dex_jumpstr = 0.0
-dex_aircontrol = 0.5
-con = 8.0
-con_maxHealth = 0.0
-con_maxStamina = 0.0
-con_stamina = 0.0
-con_regen = 0.0
-intl = 8.0
-wis = 8.0
-cha = 8.0
-current_health = 0.0
-current_stamina = 0.0
-current_speed = 0.0
-direction = Vector3(0, 0, 0)
-velocity = Vector3(0, 0, 0)
-gravity = -5.0
-jumpMaxtimer = 1.0
-jumptimer = 0.0
-load = 5.0
-lerp_speed = 15.0
-metadata/_custom_type_script = "uid://b6wj1at1p80y7"
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yyub0"]
+height = 1.9
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_fcfxi"]
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6tpsp"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0hq0q"]
 height = 1.2
 
 [node name="world" type="Node3D"]
@@ -83,38 +48,25 @@ environment = SubResource("Environment_oodip")
 transform = Transform3D(-0.868434, 0.42938, -0.247901, -1.49013e-08, 0.499998, 0.866026, 0.495804, 0.752087, -0.434216, 0, 0, 0)
 shadow_enabled = true
 
-[node name="player" type="CharacterBody3D" parent="."]
-script = ExtResource("3_yyub0")
-stats = SubResource("Resource_85ep3")
+[node name="Player" type="CharacterBody3D" parent="."]
+script = ExtResource("4_0hq0q")
 
-[node name="standing_collider" type="CollisionShape3D" parent="player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("CapsuleShape3D_fcfxi")
-
-[node name="crouch_collider" type="CollisionShape3D" parent="player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.604685, 0)
-shape = SubResource("CapsuleShape3D_6tpsp")
-disabled = true
-
-[node name="can_stand" type="RayCast3D" parent="player"]
-target_position = Vector3(0, 2, 0)
-
-[node name="neck" type="Node3D" parent="player"]
+[node name="neck" type="Node3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
-[node name="head" type="Node3D" parent="player/neck"]
+[node name="head" type="Node3D" parent="Player/neck"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 
-[node name="Camera3D" type="Camera3D" parent="player/neck/head"]
+[node name="Camera3D" type="Camera3D" parent="Player/neck/head"]
 
-[node name="StateMachine" type="Node" parent="player"]
-script = ExtResource("4_ag3va")
+[node name="standing_collider" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("CapsuleShape3D_yyub0")
 
-[node name="Run" type="Node" parent="player/StateMachine"]
-script = ExtResource("5_0eea3")
+[node name="crouch_collider" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CapsuleShape3D_0hq0q")
+disabled = true
 
-[node name="Idle" type="Node" parent="player/StateMachine"]
-script = ExtResource("6_85ep3")
-
-[node name="Jump" type="Node" parent="player/StateMachine"]
-script = ExtResource("8_85ep3")
+[node name="can_stand" type="RayCast3D" parent="Player"]
+target_position = Vector3(0, 2, 0)
