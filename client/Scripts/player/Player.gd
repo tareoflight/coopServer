@@ -33,8 +33,6 @@ func _input(event):
 			head.rotate_x(deg_to_rad(-event.relative.y*mouse_sens))
 			head.rotation.x = clamp(head.rotation.x,deg_to_rad(-89),deg_to_rad(89))
 
-
-
 func _physics_process(delta: float) -> void:
 	
 	var current_jv = base_jump_velocity
@@ -42,22 +40,17 @@ func _physics_process(delta: float) -> void:
 	
 	if Input.is_action_pressed("crouch"):
 		current_speed = base_speed * crouch_mod
-		neck.position.y = lerp(neck.position.y,crouch_collider.position.y*2,lerp_speed*delta)
+		neck.position.y = lerp(neck.position.y,-0.1+crouch_collider.position.y*2,lerp_speed*delta)
 		standing_collider.disabled=true
 		crouch_collider.disabled=false
 	elif !can_stand.is_colliding():
 		standing_collider.disabled=false
 		crouch_collider.disabled=true
-		neck.position.y = lerp(neck.position.y,standing_collider.position.y*2,lerp_speed*delta)
+		neck.position.y = lerp(neck.position.y,-0.1+standing_collider.position.y*2,lerp_speed*delta)
 		if Input.is_action_pressed("sprint"):
 			current_speed = base_speed * sprint_mod
 		else:
 			current_speed = base_speed
-	
-		
-	
-	
-	
 	
 	#	gravity !!
 	if not is_on_floor():
@@ -69,7 +62,10 @@ func _physics_process(delta: float) -> void:
 
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = current_jv
+		if !can_stand.is_colliding():
+			velocity.y = current_jv
+		else:
+			velocity.y = current_jv/2
 
 
 	var input_dir := Input.get_vector("left", "right", "forward", "backword")
