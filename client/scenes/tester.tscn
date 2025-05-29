@@ -1,9 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://bb6rv7l3dnrd8"]
+[gd_scene load_steps=8 format=3 uid="uid://bb6rv7l3dnrd8"]
 
 [ext_resource type="Material" uid="uid://dq2h38f862qq3" path="res://assets/textures/fpass/path/forestGrass.tres" id="1_ayr21"]
 [ext_resource type="Texture2D" uid="uid://d0t4d3fkrxrfx" path="res://assets/hdris/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="2_0hq0q"]
 [ext_resource type="Material" uid="uid://cxyi1q36fng8t" path="res://assets/textures/dev/grids/Dark/texture_07_material.tres" id="2_b1dbx"]
-[ext_resource type="Script" uid="uid://dag4ibqvauxnb" path="res://Scripts/player/player.gd" id="4_0hq0q"]
+[ext_resource type="PackedScene" uid="uid://semj4pm66hug" path="res://scenes/player.tscn" id="4_0hq0q"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_fcfxi"]
 panorama = ExtResource("2_0hq0q")
@@ -16,12 +16,6 @@ background_mode = 2
 sky = SubResource("Sky_f1nm7")
 tonemap_mode = 2
 glow_enabled = true
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yyub0"]
-height = 1.9
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0hq0q"]
-height = 1.2
 
 [node name="world" type="Node3D"]
 
@@ -48,25 +42,4 @@ environment = SubResource("Environment_oodip")
 transform = Transform3D(-0.868434, 0.42938, -0.247901, -1.49013e-08, 0.499998, 0.866026, 0.495804, 0.752087, -0.434216, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Player" type="CharacterBody3D" parent="."]
-script = ExtResource("4_0hq0q")
-
-[node name="neck" type="Node3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
-
-[node name="head" type="Node3D" parent="Player/neck"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
-
-[node name="Camera3D" type="Camera3D" parent="Player/neck/head"]
-
-[node name="standing_collider" type="CollisionShape3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
-shape = SubResource("CapsuleShape3D_yyub0")
-
-[node name="crouch_collider" type="CollisionShape3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
-shape = SubResource("CapsuleShape3D_0hq0q")
-disabled = true
-
-[node name="can_stand" type="RayCast3D" parent="Player"]
-target_position = Vector3(0, 2, 0)
+[node name="Player" parent="." instance=ExtResource("4_0hq0q")]
