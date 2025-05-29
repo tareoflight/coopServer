@@ -4,7 +4,7 @@ using Node;
 
 namespace NodeServer.Tests;
 
-public class RequestQueueTests : IDisposable
+public sealed class RequestQueueTests : IDisposable
 {
     private readonly CancellationTokenSource cancel = new();
     private readonly RequestQueue requestQueue;
