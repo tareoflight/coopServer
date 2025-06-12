@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://bb6rv7l3dnrd8"]
+[gd_scene load_steps=10 format=3 uid="uid://bb6rv7l3dnrd8"]
 
 [ext_resource type="Material" uid="uid://dq2h38f862qq3" path="res://assets/textures/fpass/path/forestGrass.tres" id="1_ayr21"]
 [ext_resource type="Texture2D" uid="uid://d0t4d3fkrxrfx" path="res://assets/hdris/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="2_0hq0q"]
 [ext_resource type="Material" uid="uid://cxyi1q36fng8t" path="res://assets/textures/dev/grids/Dark/texture_07_material.tres" id="2_b1dbx"]
+[ext_resource type="Material" uid="uid://bx2b4ihrlinqr" path="res://assets/textures/fpass/path/slate.tres" id="3_yyub0"]
 [ext_resource type="PackedScene" uid="uid://semj4pm66hug" path="res://scenes/player.tscn" id="4_0hq0q"]
+[ext_resource type="Script" uid="uid://ufb00k8uowo" path="res://Scripts/cool_rock.gd" id="4_ag3va"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_fcfxi"]
 panorama = ExtResource("2_0hq0q")
@@ -32,6 +34,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.17308, -16.7073)
 use_collision = true
 size = Vector3(20, 1, 20)
 material = ExtResource("2_b1dbx")
+
+[node name="Cool Rock" type="CSGBox3D" parent="stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.84949, 0.91952, -0.00323021)
+material_override = ExtResource("3_yyub0")
+use_collision = true
+material = ExtResource("3_yyub0")
+script = ExtResource("4_ag3va")
+
+[node name="speechbox" type="Label3D" parent="stage/Cool Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.835524, 0)
+text = "Cool Rock"
 
 [node name="env" type="Node3D" parent="."]
 

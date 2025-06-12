@@ -3,13 +3,17 @@ extends CharacterBody3D
 @onready var neck: Node3D = $neck
 @onready var head: Node3D = $neck/head
 @onready var eyes: Camera3D = $neck/head/Camera3D
+
+@onready var look_target: RayCast3D = $neck/head/Camera3D/look_target
+@onready var action_target: RayCast3D = $neck/head/Camera3D/action_target
+
 @onready var crouch_collider: CollisionShape3D = $crouch_collider
 @onready var standing_collider: CollisionShape3D = $standing_collider
 @onready var can_stand: RayCast3D = $can_stand
 
-const base_speed = 5.0
+const base_speed = 7.0
 var current_speed = 5.0
-const base_jump_velocity = 4.5
+const base_jump_velocity = 7
 const mouse_sens = 0.4
 
 var sprint_mod = 1.3
@@ -20,12 +24,24 @@ var lerp_speed = 10.0
 var lerp_air_speed = 0.8
 var direction = Vector3.ZERO
 
+var rock_count = 0
+
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _input(event):
 	if event.is_action_pressed("action"):
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			if action_target.is_colliding():
+				var target = action_target.get_collider()
+				if target.has_method("on_hit"):
+					if(target.on_hit(10)):
+						rock_count += 1
+					else:
+						print("It's dead jim, but you got "+str(rock_count)+" rocks")
+					
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if event.is_action_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
