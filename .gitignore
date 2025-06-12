@@ -2,3 +2,5 @@ client/addons/godotsteam/win64/~libgodotsteam.windows.template_debug.x86_64.dll
 .vscode/settings.json
 **/bin
 **/obj
+server/cli.toml
+server/data
