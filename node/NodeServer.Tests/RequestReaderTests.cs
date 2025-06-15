@@ -5,6 +5,7 @@ namespace NodeServer.Tests;
 
 public class RequestReaderTests
 {
+    private readonly CancellationTokenSource cancel = new();
     private readonly MemoryStream stream = new();
     private readonly BinaryWriter writer;
     private readonly RequestReader reader;
@@ -35,7 +36,7 @@ public class RequestReaderTests
         writer.Write(bytes.Length);
         stream.Write(bytes);
         stream.Seek(0, SeekOrigin.Begin);
-        Request actual = await reader.GetRequestAsync();
+        Request actual = await reader.GetRequestAsync(cancel.Token);
         Assert.Equal((uint)111, actual.RequestId);
         Assert.Equal(Request.RequestTypeOneofCase.Control, actual.RequestTypeCase);
         Assert.Equal(ControlRequest.ControlTypeOneofCase.Shutdown, actual.Control.ControlTypeCase);

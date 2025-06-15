@@ -1,7 +1,10 @@
+using System.Reflection;
+
 namespace NodeServer.Tests;
 
 public class StreamWrapperTests
 {
+    private readonly CancellationTokenSource cancel = new();
     private readonly MemoryStream stream = new();
     private readonly BinaryReader reader;
     private readonly BinaryWriter writer;
@@ -19,7 +22,7 @@ public class StreamWrapperTests
     {
         stream.Write(Enumerable.Repeat<byte>(55, 10).ToArray());
         stream.Seek(0, SeekOrigin.Begin);
-        Assert.Equal([55, 55, 55, 55, 55], await wrapper.GetBytesAsync(5));
+        Assert.Equal([55, 55, 55, 55, 55], await wrapper.GetBytesAsync(5, cancel.Token));
     }
 
     [Fact]
@@ -27,13 +30,13 @@ public class StreamWrapperTests
     {
         writer.Write(1234);
         stream.Seek(0, SeekOrigin.Begin);
-        Assert.Equal(1234, await wrapper.ReadSizeAsync());
+        Assert.Equal(1234, await wrapper.ReadSizeAsync(cancel.Token));
     }
 
     [Fact]
     public async Task WriteSizeAsync()
     {
-        await wrapper.WriteSizeAsync(1234);
+        await wrapper.WriteSizeAsync(1234, cancel.Token);
         stream.Seek(0, SeekOrigin.Begin);
         Assert.Equal(1234, reader.ReadInt32());
     }

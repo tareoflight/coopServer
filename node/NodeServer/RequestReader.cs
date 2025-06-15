@@ -6,9 +6,9 @@ public class RequestReader(Stream stream)
 {
     private readonly StreamWrapper wrapper = new(stream);
 
-    public async Task<Request> GetRequestAsync()
+    public async Task<Request> GetRequestAsync(CancellationToken token)
     {
-        int size = await wrapper.ReadSizeAsync();
-        return Request.Parser.ParseFrom(await wrapper.GetBytesAsync(size));
+        int size = await wrapper.ReadSizeAsync(token);
+        return Request.Parser.ParseFrom(await wrapper.GetBytesAsync(size, token));
     }
 }
