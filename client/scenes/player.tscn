@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://semj4pm66hug"]
+[gd_scene load_steps=5 format=3 uid="uid://semj4pm66hug"]
 
 [ext_resource type="Script" uid="uid://dag4ibqvauxnb" path="res://Scripts/player/Player.gd" id="1_3vyb7"]
+[ext_resource type="Texture2D" uid="uid://ccrn6c1simmu2" path="res://assets/textures/fpass/UI/pointer.png" id="2_g2els"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yyub0"]
 height = 1.9
@@ -26,6 +27,11 @@ target_position = Vector3(0, -5, 0)
 [node name="action_target" type="RayCast3D" parent="neck/head/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 target_position = Vector3(0, -2, 0)
+
+[node name="TextureRect" type="TextureRect" parent="neck/head/Camera3D"]
+offset_right = 64.0
+offset_bottom = 64.0
+texture = ExtResource("2_g2els")
 
 [node name="standing_collider" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)

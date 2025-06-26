@@ -22,9 +22,10 @@ func on_hit(dmg) -> bool:
 		else:
 			label.text = textlist[0]
 		return true
-	
+
 func _process(delta):
 	var camera = get_viewport().get_camera_3d()
 	if camera:
 		label.look_at(camera.global_transform.origin, Vector3.UP)
 		label.rotate_y(deg_to_rad(180))
+		

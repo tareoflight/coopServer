@@ -3,6 +3,7 @@ extends CharacterBody3D
 @onready var neck: Node3D = $neck
 @onready var head: Node3D = $neck/head
 @onready var eyes: Camera3D = $neck/head/Camera3D
+@onready var crosshair: TextureRect = $neck/head/Camera3D/TextureRect
 
 @onready var look_target: RayCast3D = $neck/head/Camera3D/look_target
 @onready var action_target: RayCast3D = $neck/head/Camera3D/action_target
@@ -13,8 +14,10 @@ extends CharacterBody3D
 
 const base_speed = 7.0
 var current_speed = 5.0
-const base_jump_velocity = 7
+const base_jump_velocity = 12
 const mouse_sens = 0.4
+const GRAVITY = -24.8
+
 
 var sprint_mod = 1.3
 
@@ -28,6 +31,9 @@ var rock_count = 0
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	crosshair.position.x = get_viewport().size.x/2 -32
+	crosshair.position.y = get_viewport().size.y/2 -32
+	
 
 func _input(event):
 	if event.is_action_pressed("action"):
@@ -37,9 +43,6 @@ func _input(event):
 				if target.has_method("on_hit"):
 					if(target.on_hit(10)):
 						rock_count += 1
-					else:
-						print("It's dead jim, but you got "+str(rock_count)+" rocks")
-					
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if event.is_action_pressed("ui_cancel"):
@@ -70,10 +73,9 @@ func _physics_process(delta: float) -> void:
 	
 	#	gravity !!
 	if not is_on_floor():
-		current_lerp_speed = lerp_air_speed
-		velocity += get_gravity() * delta
+		velocity.y += GRAVITY * delta
 	else:
-		current_lerp_speed = lerp_speed
+		pass
 
 
 	# Handle jump.
@@ -81,11 +83,14 @@ func _physics_process(delta: float) -> void:
 		if !can_stand.is_colliding():
 			velocity.y = current_jv
 		else:
-			velocity.y = current_jv/2
+			velocity.y = current_jv/3
 
 
 	var input_dir := Input.get_vector("left", "right", "forward", "backword")
-	direction = lerp(direction,(transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(),current_lerp_speed*delta)
+	if is_on_floor():
+		direction = lerp(direction,(transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(),lerp_speed*delta)
+	else:
+		direction = lerp(direction,(transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(),lerp_air_speed*delta)
 	
 	if direction:
 		velocity.x = direction.x * current_speed
