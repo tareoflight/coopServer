@@ -10,8 +10,8 @@ package node;
 message Request {
     uint32 request_id = 1;
     oneof request_type {
-        ControlRequest control = 2;
-        MapRequest map = 3;
+        ControlRequest control_request = 2;
+        MapRequest map_request = 3;
     }
 }
 
