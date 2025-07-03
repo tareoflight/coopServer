@@ -9,6 +9,7 @@
 
   <PropertyGroup>
     <ProtosDir>$(ProjectDir)..\protos</ProtosDir>
+    <CommsProto>$(ProtosDir)\comms.proto</CommsProto>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +20,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(protoc_windows64) -I=$(ProtosDir) --csharp_out=protos $(ProtosDir)\*.proto" />
+    <Exec Command="$(protoc_windows64) --proto_path=$(ProtosDir) --csharp_out=protos $(CommsProto)" />
   </Target>
 
 </Project>

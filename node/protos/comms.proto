@@ -1,0 +1,68 @@
+syntax = "proto3";
+package node;
+
+/***************************************
+ **                                   **
+ **              Request              **
+ **                                   **
+ ***************************************/
+
+message Request {
+    uint32 request_id = 1;
+    oneof request_type {
+        ControlRequest control = 2;
+        MapRequest map = 3;
+    }
+}
+
+message MapRequest {
+    PBVector3 player = 1;
+}
+
+message ControlRequest {
+    oneof control_type {
+        Shutdown shutdown = 1;
+    }
+}
+
+message Shutdown {
+    optional uint32 delay = 1;
+}
+
+/***************************************
+ **                                   **
+ **              Response             **
+ **                                   **
+ ***************************************/
+
+message Response {
+    uint32 request_id = 1;
+    oneof request_type {
+        MapResponse map_response = 2;
+    }
+}
+
+message MapResponse {
+    repeated MapNode nodes = 1;
+}
+
+message Heartbeat{
+    uint32 status = 1;
+}
+
+/***************************************
+ **                                   **
+ **                Util               **
+ **                                   **
+ ***************************************/
+
+message MapNode {
+    PBVector3 location = 1;
+    bytes contents = 2;
+}
+
+message PBVector3 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}

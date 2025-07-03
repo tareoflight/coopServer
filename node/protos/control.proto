@@ -1,6 +1,0 @@
-syntax = "proto3";
-package node;
-
-message Shutdown {
-    optional uint32 delay = 1;
-}
