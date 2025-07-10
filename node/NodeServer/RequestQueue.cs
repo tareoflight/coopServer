@@ -4,9 +4,9 @@ using Node;
 
 namespace NodeServer;
 
-public partial class RequestQueue(ILogger logger, IRequestDispatcher dispatcher)
+public partial class RequestQueue(ILogger<RequestQueue> logger) : IRequestQueue
 {
-    private readonly Channel<Request> queue = Channel.CreateUnbounded<Request>
+    protected readonly Channel<Request> queue = Channel.CreateUnbounded<Request>
     (
         new UnboundedChannelOptions()
         {
@@ -15,26 +15,19 @@ public partial class RequestQueue(ILogger logger, IRequestDispatcher dispatcher)
         }
     );
 
-    public ValueTask EnqueueRequest(Request request, CancellationToken stoppingToken)
+    public async Task<Request> DequeueAsync(CancellationToken cancellationToken)
+    {
+        await queue.Reader.WaitToReadAsync(cancellationToken);
+        Request request = await queue.Reader.ReadAsync(cancellationToken);
+        DebugDequeueRequest(request.RequestTypeCase);
+        return request;
+    }
+
+    public Task EnqueueAsync(Request request, CancellationToken cancellationToken)
     {
         DebugQueueRequest(request.RequestTypeCase);
-        return queue.Writer.WriteAsync(request, stoppingToken);
+        return queue.Writer.WriteAsync(request, cancellationToken).AsTask();
     }
-
-    public async Task DequeueLoop(CancellationToken stoppingToken)
-    {
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            DebugWaitRequest();
-            await queue.Reader.WaitToReadAsync(stoppingToken);
-            Request request = await queue.Reader.ReadAsync(stoppingToken);
-            DebugDequeueRequest(request.RequestTypeCase);
-            await dispatcher.Dispatch(request);
-        }
-    }
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Waiting for request")]
-    private partial void DebugWaitRequest();
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Queueing request: {RequestType}")]
     private partial void DebugQueueRequest(Request.RequestTypeOneofCase requestType);

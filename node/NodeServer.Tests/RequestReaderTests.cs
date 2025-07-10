@@ -23,7 +23,7 @@ public class RequestReaderTests
     {
         Request request = new()
         {
-            Control = new ControlRequest()
+            ControlRequest = new ControlRequest()
             {
                 Shutdown = new Shutdown()
                 {
@@ -38,8 +38,8 @@ public class RequestReaderTests
         stream.Seek(0, SeekOrigin.Begin);
         Request actual = await reader.GetRequestAsync(cancel.Token);
         Assert.Equal((uint)111, actual.RequestId);
-        Assert.Equal(Request.RequestTypeOneofCase.Control, actual.RequestTypeCase);
-        Assert.Equal(ControlRequest.ControlTypeOneofCase.Shutdown, actual.Control.ControlTypeCase);
-        Assert.Equal((uint)22, actual.Control.Shutdown.Delay);
+        Assert.Equal(Request.RequestTypeOneofCase.ControlRequest, actual.RequestTypeCase);
+        Assert.Equal(ControlRequest.ControlTypeOneofCase.Shutdown, actual.ControlRequest.ControlTypeCase);
+        Assert.Equal((uint)22, actual.ControlRequest.Shutdown.Delay);
     }
 }

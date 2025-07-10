@@ -1,4 +1,5 @@
-using Microsoft.Extensions.Logging.Abstractions;
+using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Node;
 
@@ -6,44 +7,41 @@ namespace NodeServer.Tests;
 
 public sealed class RequestQueueTests : IDisposable
 {
-    private readonly CancellationTokenSource cancel = new();
-    private readonly RequestQueue requestQueue;
-    private readonly Mock<IRequestDispatcher> dispatcher = new();
+    private class TestQueue(ILogger<RequestQueue> logger) : RequestQueue(logger)
+    {
+        public Channel<Request> Queue { get => queue; }
+    }
+
+    private readonly TestQueue requestQueue;
+    private readonly Mock<ILogger<RequestQueue>> loggerMock = new();
 
     public RequestQueueTests()
     {
-        requestQueue = new RequestQueue(NullLogger.Instance, dispatcher.Object);
+        requestQueue = new(loggerMock.Object);
     }
 
     public void Dispose()
     {
-        dispatcher.VerifyNoOtherCalls();
+        loggerMock.VerifyNoOtherCalls();
     }
 
     [Fact]
-    public async void DequeueLoop_Cancels()
+    public async void DequeueAsync()
     {
-        Task task = requestQueue.DequeueLoop(cancel.Token);
-        await cancel.CancelAsync();
-        await Assert.ThrowsAsync<OperationCanceledException>(async () => await task);
+        Request expected = new();
+        await requestQueue.Queue.Writer.WriteAsync(expected);
+        Request actual = await requestQueue.DequeueAsync(CancellationToken.None);
+        Assert.Equal(expected, actual);
+        loggerMock.Verify(m => m.IsEnabled(LogLevel.Debug));
     }
 
     [Fact]
-    public async Task DequeueLoop_PreCancel()
+    public async void EnqueueAsync()
     {
-        await cancel.CancelAsync();
-        await requestQueue.DequeueLoop(cancel.Token);
-        // no exception means it didn't get into the waits
-    }
-
-    [Fact]
-    public async void DequeueLoop_Dispatch()
-    {
-        Task task = requestQueue.DequeueLoop(cancel.Token);
-        Request request = new();
-        await requestQueue.EnqueueRequest(request, cancel.Token);
-        dispatcher.Verify(d => d.Dispatch(request));
-        await cancel.CancelAsync();
-        await Assert.ThrowsAsync<OperationCanceledException>(async () => await task);
+        Request expected = new();
+        await requestQueue.EnqueueAsync(expected, CancellationToken.None);
+        Request actual = await requestQueue.Queue.Reader.ReadAsync();
+        Assert.Equal(expected, actual);
+        loggerMock.Verify(m => m.IsEnabled(LogLevel.Debug));
     }
 }

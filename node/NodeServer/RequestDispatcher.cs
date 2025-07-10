@@ -1,34 +1,32 @@
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Node;
 using NodeServer.handlers;
 
 namespace NodeServer;
 
-public partial class RequestDispatcher(ILogger logger) : IRequestDispatcher
+public partial class RequestDispatcher(ILogger<RequestDispatcher> logger, IHandlerMap requestMap, IRequestQueue requestQueue) : BackgroundService
 {
-    private readonly Dictionary<Request.RequestTypeOneofCase, IRequestHandler> handlers = [];
-
-    public void AddHandler(IRequestHandler handler)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        if (handlers.ContainsKey(handler.RequestType))
+        while (!cancellationToken.IsCancellationRequested)
         {
-            throw new ArgumentException($"Already a handler for {handler.RequestType}", nameof(handler));
+            DebugWaitRequest();
+            Request request = await requestQueue.DequeueAsync(cancellationToken);
+            IRequestHandler? handler = requestMap.GetHandlerOrNull(request.RequestTypeCase);
+            if (handler != null)
+            {
+                await handler.Handle(request);
+            }
+            else
+            {
+                WarnUnknownRequest(request.RequestTypeCase);
+            }
         }
-
-        handlers.Add(handler.RequestType, handler);
     }
 
-    public async Task Dispatch(Request request)
-    {
-        if (handlers.TryGetValue(request.RequestTypeCase, out IRequestHandler? handler))
-        {
-            await handler.Handle(request);
-        }
-        else
-        {
-            WarnUnknownRequest(request.RequestTypeCase);
-        }
-    }
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Waiting for request")]
+    private partial void DebugWaitRequest();
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Unknown Request Type '{RequestType}'")]
     private partial void WarnUnknownRequest(Request.RequestTypeOneofCase requestType);

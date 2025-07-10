@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using Google.Protobuf;
 using Node;
 
@@ -47,7 +46,7 @@ while (loop)
             {
                 Shutdown = new()
             };
-            request.Control = control;
+            request.ControlRequest = control;
             byte[] bytes = request.ToByteArray();
             writer.Write(bytes.Length);
             writer.Write(bytes);

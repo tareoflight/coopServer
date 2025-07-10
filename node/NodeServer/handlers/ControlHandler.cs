@@ -1,29 +1,36 @@
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Node;
 
 namespace NodeServer.handlers;
 
-public partial class ControlHandler(ILoggerFactory loggerFactory) : RequestHandler(loggerFactory)
+public partial class ControlHandler : IRequestHandler
 {
-    public override Request.RequestTypeOneofCase RequestType => Request.RequestTypeOneofCase.Control;
+    private readonly ILogger logger;
+    private readonly IHostApplicationLifetime applicationLifetime;
+    public Request.RequestTypeOneofCase RequestType => Request.RequestTypeOneofCase.ControlRequest;
 
-    // might need to make async in the future
-    public event EventHandler? Shutdown;
+    public ControlHandler(ILogger<ControlHandler> logger, IHandlerMap requestMap, IHostApplicationLifetime applicationLifetime)
+    {
+        this.logger = logger;
+        this.applicationLifetime = applicationLifetime;
+        requestMap.AddHandler(this);
+    }
 
-    public override async Task Handle(Request request)
+    public async Task Handle(Request request)
     {
         logger.DebugProto(request);
-        switch (request.Control.ControlTypeCase)
+        switch (request.ControlRequest.ControlTypeCase)
         {
             case ControlRequest.ControlTypeOneofCase.Shutdown:
-                if (request.Control.Shutdown.HasDelay)
+                if (request.ControlRequest.Shutdown.Delay > 0)
                 {
-                    await Task.Delay((int)request.Control.Shutdown.Delay);
+                    await Task.Delay((int)request.ControlRequest.Shutdown.Delay);
                 }
-                Shutdown?.Invoke(this, new EventArgs());
+                applicationLifetime.StopApplication();
                 break;
             default:
-                WarnUnknownControl(request.Control.ControlTypeCase);
+                WarnUnknownControl(request.ControlRequest.ControlTypeCase);
                 break;
         }
     }
