@@ -8,10 +8,9 @@ package node;
  ***************************************/
 
 message Request {
-    uint32 request_id = 1;
     oneof request_type {
-        ControlRequest control_request = 2;
-        MapRequest map_request = 3;
+        ControlRequest control_request = 1;
+        MapRequest map_request = 2;
     }
 }
 
@@ -31,18 +30,18 @@ message Shutdown {
 
 /***************************************
  **                                   **
- **              Response             **
+ **             NodeEvent             **
  **                                   **
  ***************************************/
 
-message Response {
-    uint32 request_id = 1;
-    oneof request_type {
-        MapResponse map_response = 2;
+message NodeEvent {
+    oneof event_type {
+        Heartbeat heartbeat_event = 1;
+        MapEvent map_event = 2;
     }
 }
 
-message MapResponse {
+message MapEvent {
     repeated MapNode nodes = 1;
 }
 

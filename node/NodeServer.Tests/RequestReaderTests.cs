@@ -30,14 +30,12 @@ public class RequestReaderTests
                     Delay = 22,
                 },
             },
-            RequestId = 111,
         };
         byte[] bytes = request.ToByteArray();
         writer.Write(bytes.Length);
         stream.Write(bytes);
         stream.Seek(0, SeekOrigin.Begin);
         Request actual = await reader.GetRequestAsync(cancel.Token);
-        Assert.Equal((uint)111, actual.RequestId);
         Assert.Equal(Request.RequestTypeOneofCase.ControlRequest, actual.RequestTypeCase);
         Assert.Equal(ControlRequest.ControlTypeOneofCase.Shutdown, actual.ControlRequest.ControlTypeCase);
         Assert.Equal((uint)22, actual.ControlRequest.Shutdown.Delay);
