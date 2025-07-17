@@ -9,7 +9,7 @@ using NodeServer.handlers;
 
 public sealed class RequestDispatcherTests : IDisposable
 {
-    private class TestDispatcher(ILogger<RequestDispatcher> logger, IHandlerMap requestMap, IRequestQueue requestQueue) : RequestDispatcher(logger, requestMap, requestQueue)
+    private class TestDispatcher(ILogger<RequestDispatcher> logger, IHandlerMap requestMap, IAsyncQueue<Request> requestQueue) : RequestDispatcher(logger, requestMap, requestQueue)
     {
         public Task TestExecuteAsync(CancellationToken cancellationToken)
         {
@@ -22,7 +22,7 @@ public sealed class RequestDispatcherTests : IDisposable
     private readonly Mock<ILogger<RequestDispatcher>> loggerMock = new();
     private readonly Mock<IRequestHandler> handlerMock = new();
     private readonly Mock<IHandlerMap> mapMock = new();
-    private readonly Mock<IRequestQueue> queueMock = new();
+    private readonly Mock<IAsyncQueue<Request>> queueMock = new();
 
     public RequestDispatcherTests()
     {

@@ -5,7 +5,7 @@ using NodeServer.handlers;
 
 namespace NodeServer;
 
-public partial class RequestDispatcher(ILogger<RequestDispatcher> logger, IHandlerMap requestMap, IRequestQueue requestQueue) : BackgroundService
+public partial class RequestDispatcher(ILogger<RequestDispatcher> logger, IHandlerMap requestMap, IAsyncQueue<Request> requestQueue) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -13,6 +13,7 @@ public partial class RequestDispatcher(ILogger<RequestDispatcher> logger, IHandl
         {
             DebugWaitRequest();
             Request request = await requestQueue.DequeueAsync(cancellationToken);
+            DebugRequestType(request.RequestTypeCase);
             IRequestHandler? handler = requestMap.GetHandlerOrNull(request.RequestTypeCase);
             if (handler != null)
             {
@@ -27,6 +28,9 @@ public partial class RequestDispatcher(ILogger<RequestDispatcher> logger, IHandl
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Waiting for request")]
     private partial void DebugWaitRequest();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Dequeued Request: {RequestType}")]
+    private partial void DebugRequestType(Request.RequestTypeOneofCase requestType);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Unknown Request Type '{RequestType}'")]
     private partial void WarnUnknownRequest(Request.RequestTypeOneofCase requestType);

@@ -6,7 +6,7 @@ using Node;
 
 namespace NodeServer;
 
-public partial class ReceiveService(ILogger<ReceiveService> logger, IRequestQueue requestQueue) : BackgroundService
+public partial class ReceiveService(ILogger<ReceiveService> logger, IAsyncQueue<Request> requestQueue) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
