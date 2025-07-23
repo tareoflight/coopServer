@@ -4,3 +4,4 @@ client/addons/godotsteam/win64/~libgodotsteam.windows.template_debug.x86_64.dll
 **/obj
 server/cli.toml
 server/data
+*.gd.uid
