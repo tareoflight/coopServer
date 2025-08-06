@@ -27,6 +27,26 @@ while (true)
 }
 
 using NetworkStream stream = new(socket);
+
+Task task = Task.Run(() =>
+{
+    try
+    {
+        BinaryReader reader = new(stream);
+        while (true)
+        {
+            int size = reader.ReadInt32();
+            byte[] bytes = reader.ReadBytes(size);
+            NodeEvent nodeEvent = NodeEvent.Parser.ParseFrom(bytes);
+            W("Got Event: " + nodeEvent);
+        }
+    }
+    catch (Exception)
+    {
+        // don't care
+    }
+});
+
 using BinaryWriter writer = new(stream);
 bool loop = true;
 while (loop)

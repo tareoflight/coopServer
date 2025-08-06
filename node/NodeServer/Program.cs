@@ -24,6 +24,7 @@ public partial class Program
 
         builder.Services.AddHostedService<RequestDispatcher>();
         builder.Services.AddHostedService<ReceiveService>();
+        builder.Services.AddHostedService<HeartbeatService>();
 
         using IHost host = builder.Build();
         await host.RunAsync();
