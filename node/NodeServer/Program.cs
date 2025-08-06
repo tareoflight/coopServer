@@ -20,6 +20,7 @@ public partial class Program
         builder.Services.AddSingleton<IHandlerMap, HandlerMap>();
 
         builder.Services.AddSingleton<IAsyncQueue<Request>, AsyncQueue<Request>>();
+        builder.Services.AddSingleton<ISocketConnection, SocketConnection>();
 
         builder.Services.AddHostedService<RequestDispatcher>();
         builder.Services.AddHostedService<ReceiveService>();

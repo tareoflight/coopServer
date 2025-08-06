@@ -28,17 +28,13 @@ while (true)
 
 using NetworkStream stream = new(socket);
 using BinaryWriter writer = new(stream);
-uint requestId = 1;
 bool loop = true;
 while (loop)
 {
     W("==ClientSim==");
     W("1...Control");
     string selection = R("Choose a request to send");
-    Request request = new()
-    {
-        RequestId = requestId++,
-    };
+    Request request = new();
     switch (selection)
     {
         case "1":

@@ -1,25 +1,15 @@
 using Google.Protobuf;
 using Node;
+using NodeServer.stream;
 
-namespace NodeServer.Tests;
+namespace NodeServer.Tests.stream;
 
 public class RequestReaderTests
 {
     private readonly CancellationTokenSource cancel = new();
-    private readonly MemoryStream stream = new();
-    private readonly BinaryWriter writer;
-    private readonly RequestReader reader;
-    private readonly StreamWrapper wrapper;
-
-    public RequestReaderTests()
-    {
-        writer = new(stream);
-        reader = new(stream);
-        wrapper = new(stream);
-    }
 
     [Fact]
-    public async Task GetRequest_Control_Shutdown()
+    public async Task ReadRequestAsync_Success()
     {
         Request request = new()
         {
@@ -32,12 +22,25 @@ public class RequestReaderTests
             },
         };
         byte[] bytes = request.ToByteArray();
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream);
         writer.Write(bytes.Length);
         stream.Write(bytes);
         stream.Seek(0, SeekOrigin.Begin);
-        Request actual = await reader.GetRequestAsync(cancel.Token);
+        RequestReader reader = new(stream);
+        Request actual = await reader.ReadRequestAsync(cancel.Token);
         Assert.Equal(Request.RequestTypeOneofCase.ControlRequest, actual.RequestTypeCase);
         Assert.Equal(ControlRequest.ControlTypeOneofCase.Shutdown, actual.ControlRequest.ControlTypeCase);
         Assert.Equal((uint)22, actual.ControlRequest.Shutdown.Delay);
+    }
+
+    [Fact]
+    public async Task ReadRequestAsync_Cancel()
+    {
+        using SlowStream stream = new();
+        RequestReader reader = new(stream);
+        Task task = reader.ReadRequestAsync(cancel.Token);
+        await cancel.CancelAsync();
+        await Assert.ThrowsAsync<OperationCanceledException>(async () => await task);
     }
 }
