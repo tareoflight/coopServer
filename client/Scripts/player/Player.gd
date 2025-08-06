@@ -28,12 +28,14 @@ var lerp_air_speed = 0.8
 var direction = Vector3.ZERO
 
 var rock_count = 0
+var menu_instance
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	crosshair.position.x = get_viewport().size.x/2 -32
 	crosshair.position.y = get_viewport().size.y/2 -32
 	
+
 
 func _input(event):
 	if event.is_action_pressed("action"):
@@ -47,6 +49,7 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if event.is_action_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			rotate_y(deg_to_rad(-event.relative.x*mouse_sens))
 			head.rotate_x(deg_to_rad(-event.relative.y*mouse_sens))

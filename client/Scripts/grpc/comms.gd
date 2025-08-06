@@ -690,37 +690,19 @@ class Request:
 	func _init():
 		var service
 		
-		__request_id = PBField.new("request_id", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 1, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
-		service = PBServiceField.new()
-		service.field = __request_id
-		data[__request_id.tag] = service
-		
-		__control_request = PBField.new("control_request", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 2, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		__control_request = PBField.new("control_request", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 1, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
 		service = PBServiceField.new()
 		service.field = __control_request
 		service.func_ref = Callable(self, "new_control_request")
 		data[__control_request.tag] = service
 		
-		__map_request = PBField.new("map_request", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 3, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		__map_request = PBField.new("map_request", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 2, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
 		service = PBServiceField.new()
 		service.field = __map_request
 		service.func_ref = Callable(self, "new_map_request")
 		data[__map_request.tag] = service
 		
 	var data = {}
-	
-	var __request_id: PBField
-	func has_request_id() -> bool:
-		if __request_id.value != null:
-			return true
-		return false
-	func get_request_id() -> int:
-		return __request_id.value
-	func clear_request_id() -> void:
-		data[1].state = PB_SERVICE_STATE.UNFILLED
-		__request_id.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
-	func set_request_id(value : int) -> void:
-		__request_id.value = value
 	
 	var __control_request: PBField
 	func has_control_request() -> bool:
@@ -730,12 +712,12 @@ class Request:
 	func get_control_request() -> ControlRequest:
 		return __control_request.value
 	func clear_control_request() -> void:
-		data[2].state = PB_SERVICE_STATE.UNFILLED
+		data[1].state = PB_SERVICE_STATE.UNFILLED
 		__control_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 	func new_control_request() -> ControlRequest:
-		data[2].state = PB_SERVICE_STATE.FILLED
+		data[1].state = PB_SERVICE_STATE.FILLED
 		__map_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
-		data[3].state = PB_SERVICE_STATE.UNFILLED
+		data[2].state = PB_SERVICE_STATE.UNFILLED
 		__control_request.value = ControlRequest.new()
 		return __control_request.value
 	
@@ -747,12 +729,12 @@ class Request:
 	func get_map_request() -> MapRequest:
 		return __map_request.value
 	func clear_map_request() -> void:
-		data[3].state = PB_SERVICE_STATE.UNFILLED
+		data[2].state = PB_SERVICE_STATE.UNFILLED
 		__map_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 	func new_map_request() -> MapRequest:
 		__control_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
-		data[2].state = PB_SERVICE_STATE.UNFILLED
-		data[3].state = PB_SERVICE_STATE.FILLED
+		data[1].state = PB_SERVICE_STATE.UNFILLED
+		data[2].state = PB_SERVICE_STATE.FILLED
 		__map_request.value = MapRequest.new()
 		return __map_request.value
 	
@@ -917,50 +899,57 @@ class Shutdown:
 			return PB_ERR.PARSE_INCOMPLETE
 		return result
 	
-class Response:
+class NodeEvent:
 	func _init():
 		var service
 		
-		__request_id = PBField.new("request_id", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 1, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		__heartbeat_event = PBField.new("heartbeat_event", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 1, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
 		service = PBServiceField.new()
-		service.field = __request_id
-		data[__request_id.tag] = service
+		service.field = __heartbeat_event
+		service.func_ref = Callable(self, "new_heartbeat_event")
+		data[__heartbeat_event.tag] = service
 		
-		__map_response = PBField.new("map_response", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 2, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		__map_event = PBField.new("map_event", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 2, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
 		service = PBServiceField.new()
-		service.field = __map_response
-		service.func_ref = Callable(self, "new_map_response")
-		data[__map_response.tag] = service
+		service.field = __map_event
+		service.func_ref = Callable(self, "new_map_event")
+		data[__map_event.tag] = service
 		
 	var data = {}
 	
-	var __request_id: PBField
-	func has_request_id() -> bool:
-		if __request_id.value != null:
+	var __heartbeat_event: PBField
+	func has_heartbeat_event() -> bool:
+		if __heartbeat_event.value != null:
 			return true
 		return false
-	func get_request_id() -> int:
-		return __request_id.value
-	func clear_request_id() -> void:
+	func get_heartbeat_event() -> Heartbeat:
+		return __heartbeat_event.value
+	func clear_heartbeat_event() -> void:
 		data[1].state = PB_SERVICE_STATE.UNFILLED
-		__request_id.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
-	func set_request_id(value : int) -> void:
-		__request_id.value = value
+		__heartbeat_event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+	func new_heartbeat_event() -> Heartbeat:
+		data[1].state = PB_SERVICE_STATE.FILLED
+		__map_event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[2].state = PB_SERVICE_STATE.UNFILLED
+		__heartbeat_event.value = Heartbeat.new()
+		return __heartbeat_event.value
 	
-	var __map_response: PBField
-	func has_map_response() -> bool:
-		if __map_response.value != null:
+	var __map_event: PBField
+	func has_map_event() -> bool:
+		if __map_event.value != null:
 			return true
 		return false
-	func get_map_response() -> MapResponse:
-		return __map_response.value
-	func clear_map_response() -> void:
+	func get_map_event() -> MapEvent:
+		return __map_event.value
+	func clear_map_event() -> void:
 		data[2].state = PB_SERVICE_STATE.UNFILLED
-		__map_response.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
-	func new_map_response() -> MapResponse:
+		__map_event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+	func new_map_event() -> MapEvent:
+		__heartbeat_event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[1].state = PB_SERVICE_STATE.UNFILLED
 		data[2].state = PB_SERVICE_STATE.FILLED
-		__map_response.value = MapResponse.new()
-		return __map_response.value
+		__map_event.value = MapEvent.new()
+		return __map_event.value
 	
 	func _to_string() -> String:
 		return PBPacker.message_to_string(data)
@@ -983,7 +972,7 @@ class Response:
 			return PB_ERR.PARSE_INCOMPLETE
 		return result
 	
-class MapResponse:
+class MapEvent:
 	func _init():
 		var service
 		
