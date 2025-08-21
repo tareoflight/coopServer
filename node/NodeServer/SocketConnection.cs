@@ -12,10 +12,10 @@ public partial class SocketConnection : ISocketConnection, IDisposable
     private readonly ILogger logger;
     private readonly IHostApplicationLifetime applicationLifetime;
     private readonly Socket socket;
-    private readonly Socket handler;
-    private readonly NetworkStream stream;
-    private readonly RequestReader reader;
-    private readonly NodeEventWriter writer;
+    private Socket? handler;
+    private NetworkStream? stream;
+    private RequestReader? reader;
+    private NodeEventWriter? writer;
 
     public SocketConnection(ILogger<SocketConnection> logger, IHostApplicationLifetime applicationLifetime)
     {
@@ -30,26 +30,21 @@ public partial class SocketConnection : ISocketConnection, IDisposable
         LogBindMessage(ip, port);
         socket.Bind(endpoint);
         socket.Listen(100);
-        // wait for someone to connect
-        handler = socket.Accept();
-        stream = new(handler);
-        reader = new(stream);
-        writer = new(stream);
-        LogClientConnect();
     }
 
     public async Task<Request> GetRequestAsync(CancellationToken token)
     {
         try
         {
+            await Connect();
             return await reader!.ReadRequestAsync(token);
         }
         catch (Exception ex) when (ex is EndOfStreamException || ex is IOException)
         {
             // connection ended
             Disconnect();
+            return await GetRequestAsync(token);
         }
-        throw new OperationCanceledException();
     }
 
     public void Dispose()
@@ -64,21 +59,45 @@ public partial class SocketConnection : ISocketConnection, IDisposable
     {
         try
         {
-            await writer!.WriteNodeEventAsync(nodeEvent, token);
-            return;
+            if (writer == null)
+            {
+                DebugFailedNodeEvent(nodeEvent.EventTypeCase);
+            }
+            else
+            {
+                await writer.WriteNodeEventAsync(nodeEvent, token);
+            }
         }
         catch (Exception ex) when (ex is EndOfStreamException || ex is IOException)
         {
-            // connection ended
-            Disconnect();
+            DebugFailedNodeEvent(nodeEvent.EventTypeCase);
         }
-        throw new OperationCanceledException();
+    }
+
+    private async Task Connect()
+    {
+        if (handler != null) return;
+        // wait for someone to connect
+        handler = await socket.AcceptAsync();
+        stream = new(handler);
+        reader = new(stream);
+        writer = new(stream);
+        LogClientConnect();
     }
 
     private void Disconnect()
     {
+        stream?.Dispose();
+        stream = null;
+        handler?.Dispose();
+        handler = null;
+        reader = null;
+        writer = null;
         LogClientDisconnect();
+        return;
+        // for when we have options to decide on reconnect behaviour
         applicationLifetime.StopApplication();
+        throw new OperationCanceledException();
     }
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Binding to {Addr}:{Port}")]
@@ -89,4 +108,7 @@ public partial class SocketConnection : ISocketConnection, IDisposable
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Client Disconnected")]
     private partial void LogClientDisconnect();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Failed to send NodeEvent: {Type}")]
+    private partial void DebugFailedNodeEvent(NodeEvent.EventTypeOneofCase type);
 }
