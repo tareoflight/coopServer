@@ -17,15 +17,20 @@ func _ready():
 		tests[name].call()
 	
 
-func _process(delta):
-	if stream.recever.get_available_bytes() > 0:
-		var data = stream.recever.get_utf8_string(stream.recever.get_available_bytes())
-		print("Got stream data:", data)
+func _process(_delta):
+	if stream.con.get_available_bytes() > 0:
+		var size = stream.con.get_32()
+		var data = stream.con.get_data(size)[1]
+		var event = stream.event(data)
+		if event.has_heartbeat_event():
+			print("heartbeat ",data)
+				
 
 func send_request():
-	print("sending shutdown")
-	stream.shutdown(15).send()
-	print("sent shutdown")
+	#print("sending shutdown")
+	#stream.shutdown(15).send()
+	#print("sent shutdown")
+	pass
 	
 		
 func get_response():

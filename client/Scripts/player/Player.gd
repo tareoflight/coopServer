@@ -4,6 +4,8 @@ extends CharacterBody3D
 @onready var head: Node3D = $neck/head
 @onready var eyes: Camera3D = $neck/head/Camera3D
 @onready var crosshair: TextureRect = $neck/head/Camera3D/TextureRect
+@onready var gui_panel_3d: Node3D = $neck/head/Camera3D/GUIPanel3D
+
 
 @onready var look_target: RayCast3D = $neck/head/Camera3D/look_target
 @onready var action_target: RayCast3D = $neck/head/Camera3D/action_target
@@ -36,7 +38,10 @@ func _ready() -> void:
 	crosshair.position.y = get_viewport().size.y/2 -32
 	
 
-
+func hide_ui():
+	gui_panel_3d.visible=false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
 func _input(event):
 	if event.is_action_pressed("action"):
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
@@ -45,10 +50,10 @@ func _input(event):
 				if target.has_method("on_hit"):
 					if(target.on_hit(10)):
 						rock_count += 1
-		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
 	if event.is_action_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		gui_panel_3d.visible=true
 		
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			rotate_y(deg_to_rad(-event.relative.x*mouse_sens))

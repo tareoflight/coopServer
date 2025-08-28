@@ -5,11 +5,11 @@ var stream
 var data: PackedByteArray
 
 func _init(_stream):
-    stream = _stream
+	stream = _stream
 
 func with_data(_data: PackedByteArray) -> RequestBuilder:
-    data = _data
-    return self
+	data = _data
+	return self
 
 func send():
-    stream.send(data)
+	stream.send(data)

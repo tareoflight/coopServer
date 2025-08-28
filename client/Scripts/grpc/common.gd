@@ -1,7 +1,7 @@
 extends Node
 var url = "127.0.0.1"
 var port = 25569
-var sender := StreamPeerTCP.new()
+var con := StreamPeerTCP.new()
 var recever := StreamPeerTCP.new()
 var rpc := preload("res://Scripts/grpc/comms.gd")
 var rb = preload("res://Scripts/grpc/RequestBuilder.gd")
@@ -14,10 +14,10 @@ func wait_seconds(seconds: float) -> void:
 
 #### sub to to event stream
 func new_connection():
-	var err = sender.connect_to_host(url, port)
+	var err = con.connect_to_host(url, port)
 	if err == OK:
-		while sender.get_status() == StreamPeerTCP.STATUS_CONNECTING:
-			sender.poll()
+		while con.get_status() == StreamPeerTCP.STATUS_CONNECTING:
+			con.poll()
 			await wait_seconds(1.0)
 	else:
 		print("Connection failed: ", err)
@@ -27,13 +27,20 @@ func new_connection():
 	# 		recever.poll()
 	# else:
 	# 	print("Connection failed: ", err)
-	print("Connected to ",sender.get_connected_host())
+	print("Connected to ",con.get_connected_host())
 	
 
 #### send request
 func send(data: PackedByteArray):
-	sender.put_32(data.size())
-	sender.put_data(data)
+	con.put_32(data.size())
+	con.put_data(data)
+
+func event(a):
+	var results = {}
+	var r = null
+	r = rpc.NodeEvent.new()
+	r.from_bytes(a)
+	return r
 
 func request_builder() -> RequestBuilder:
 	return RequestBuilder.new(self)

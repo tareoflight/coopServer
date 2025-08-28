@@ -128,3 +128,13 @@ func rotate_area_to_billboard():
 
 		# Rotate in the Z axis to compensate camera tilt.
 		node_area.rotate_object_local(Vector3.BACK, camera.rotation.z)
+
+
+func recursive_check(last:Node3D):
+	if last.has_method("hide_ui"):
+		last.hide_ui()
+	else:
+		recursive_check(last.get_parent())
+
+func _on_button_pressed() -> void:
+	recursive_check(get_parent())
