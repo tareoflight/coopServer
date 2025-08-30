@@ -1,0 +1,6 @@
+{
+    "NodeServerOptions": {
+        "LogLevel": "Information",
+        "Port": 25569
+    }
+}

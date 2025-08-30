@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Node;
 using NodeServer.stream;
 
@@ -10,6 +11,7 @@ namespace NodeServer;
 public partial class SocketConnection : ISocketConnection, IDisposable
 {
     private readonly ILogger logger;
+    private readonly NodeServerOptions options;
     private readonly IHostApplicationLifetime applicationLifetime;
     private readonly Socket socket;
     private Socket? handler;
@@ -17,12 +19,13 @@ public partial class SocketConnection : ISocketConnection, IDisposable
     private RequestReader? reader;
     private NodeEventWriter? writer;
 
-    public SocketConnection(ILogger<SocketConnection> logger, IHostApplicationLifetime applicationLifetime)
+    public SocketConnection(ILogger<SocketConnection> logger, IOptions<NodeServerOptions> options, IHostApplicationLifetime applicationLifetime)
     {
         this.logger = logger;
+        this.options = options.Value;
         this.applicationLifetime = applicationLifetime;
         string ip = "127.0.0.1";
-        int port = 25569;
+        int port = this.options.Port;
         IPAddress addr = IPAddress.Parse(ip);
         IPEndPoint endpoint = new(addr, port);
 
