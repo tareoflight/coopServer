@@ -1,4 +1,14 @@
 services:
+  devcontainer:
+    image: coolserver
+    build: .
+    entrypoint: [ "tail", "-f", "/dev/null" ]
+    command: 
+    network_mode: service:spacetimedb
+    volumes:
+      - ./cli.toml:/home/spacetime/.config/spacetime/cli.toml
+      - ../:/app
+
   spacetimedb:
     image: coolserver
     build: .
