@@ -13,6 +13,13 @@
 			"targets": "aarch64-unknown-linux-gnu",
 			"components": "rust-analyzer,rust-src,rustfmt,clippy"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"rust-lang.rust-analyzer"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
