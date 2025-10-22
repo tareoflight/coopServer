@@ -7,7 +7,7 @@ services:
     network_mode: service:spacetimedb
     volumes:
       - ./cli.toml:/home/spacetime/.config/spacetime/cli.toml
-      - ../:/app
+      - .:/app
 
   spacetimedb:
     image: coolserver
