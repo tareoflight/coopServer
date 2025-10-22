@@ -1,7 +1,15 @@
 #!/bin/sh
-VERB=$1
-if [ ! -z "$VERB" ]; then
-    shift
-    exec spacetime $VERB noot "$@"
-fi
-exec spacetime
+
+case $1 in
+    --publish)
+        exec spacetime publish noot
+        ;;
+    *)
+        VERB=$1
+        if [ ! -z "$VERB" ]; then
+            shift
+            exec spacetime $VERB noot "$@"
+        fi
+        exec spacetime
+        ;;
+esac
