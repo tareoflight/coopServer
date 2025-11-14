@@ -64,9 +64,9 @@ fn make_chunk(ctx: &ReducerContext) -> Result<(), String> {
 #[reducer]
 fn make_node(ctx: &ReducerContext) -> Result<(), String> {
     let chunk = get_chunk(&ctx.db, 0, 0, 0).or_else(|msg| Err(msg)).unwrap();
-    for z in 0..=31 {
-        for y in 0..=31 {
-            for x in 0..=31 {
+    for z in 0..=3 {
+        for y in 0..=3 {
+            for x in 0..=3 {
                 let _ = insert_node(
                     &ctx.db,
                     NodeData {

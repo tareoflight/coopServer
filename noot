@@ -1,6 +1,9 @@
 #!/bin/sh
 
 case $1 in
+    --generate)
+        exec spacetime generate --lang csharp --module-name noot --out-dir generate
+        ;;
     --publish)
         exec spacetime publish noot
         ;;
